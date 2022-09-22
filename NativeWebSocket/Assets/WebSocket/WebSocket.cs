@@ -7,8 +7,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using AOT;
-using System.Runtime.InteropServices;
 using UnityEngine;
 using System.Collections;
 
@@ -20,15 +18,13 @@ public class MainThreadUtil : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     public static void Setup()
     {
-        Instance = new GameObject("MainThreadUtil")
-            .AddComponent<MainThreadUtil>();
+        Instance = new GameObject("MainThreadUtil").AddComponent<MainThreadUtil>();
         synchronizationContext = SynchronizationContext.Current;
     }
 
     public static void Run(IEnumerator waitForUpdate)
     {
-        synchronizationContext.Post(_ => Instance.StartCoroutine(
-                    waitForUpdate), null);
+        synchronizationContext.Post(_ => Instance.StartCoroutine(waitForUpdate), null);
     }
 
     void Awake()
@@ -624,7 +620,6 @@ namespace NativeWebSocket
             }
 
             List<byte[]> messageListCopy;
-
             lock (IncomingMessageLock)
             {
                 messageListCopy = new List<byte[]>(m_MessageList);
@@ -663,9 +658,10 @@ namespace NativeWebSocket
 
                         if (result.MessageType == WebSocketMessageType.Text)
                         {
+                            byte[] arr = ms.ToArray();
                             lock (IncomingMessageLock)
                             {
-                              m_MessageList.Add(ms.ToArray());
+                              m_MessageList.Add(arr);
                             }
 
                             //using (var reader = new StreamReader(ms, Encoding.UTF8))
@@ -676,9 +672,10 @@ namespace NativeWebSocket
                         }
                         else if (result.MessageType == WebSocketMessageType.Binary)
                         {
+                            byte[] arr = ms.ToArray();
                             lock (IncomingMessageLock)
                             {
-                              m_MessageList.Add(ms.ToArray());
+                              m_MessageList.Add(arr);
                             }
                         }
                         else if (result.MessageType == WebSocketMessageType.Close)
